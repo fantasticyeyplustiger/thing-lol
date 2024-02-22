@@ -14,7 +14,8 @@ public class Main {
         // main loop
         while(true) {
             println("choose: get average[1], converting time to time[2], get random number[3], pythagorean theorem[4]," +
-                    "law of cosine[5]");
+                    " law of cosine[5]");
+            println("quadratic formula[6], find volume[7], quit[10]");
             String input = scan.nextLine();
             switch (input) {
                 case "1", "get average", "average", "Get average":
@@ -30,10 +31,16 @@ public class Main {
                 case "4", "pythagorean theorem", "Pythagorean Theorem", "pythagorean":
                     pythagoreanTheorem();
                     break;
-                case "5", "law of cosine":
+                case "5", "law of cosine", "loc":
                     lawOfCosine();
                     break;
-                case "break", "quit":
+                case "6", "quadratic formula":
+                    quadraticFormula();
+                    break;
+                case "7", "find volume":
+                    findVolume();
+                    break;
+                case "10", "q" ,"break", "quit":
                     break label;
                 default:
                     println("bro you have to choose one of them");
@@ -199,7 +206,7 @@ public class Main {
      * finds a side length of a right triangle using the Pythagorean Theorem (a^2 + b^2 = c^2)
      */
     public static void pythagoreanTheorem(){
-        int choice = 0;
+        int choice;
         while(true) {
             choice = getInteger("are you trying to find the hypotenuse[1] or a legs side length[2] or quit[3]");
             if(choice != 1 && choice != 2){
@@ -288,8 +295,58 @@ public class Main {
 
             double roundedSideLength = getRoundedNumber(formulaSideLength);
 
-
             System.out.println("your unknown side length is " + roundedSideLength + " long");
+        }
+    }
+
+    /**
+     * uses quadratic formula to find the solutions of a quadratic equation, then prints said solutions
+     */
+    public static void quadraticFormula(){
+        System.out.println("formula: (-b ± sqrt(b^2 - 4ac)) / 2a");
+        System.out.println("in the form of ax^2 + bx + c, enter a, b, and c accordingly");
+
+        double a = getDouble("a: ");
+        double b = getDouble("b: ");
+        double c = getDouble("c: ");
+        double discriminant = (b * b) - (4 * a * c);
+        boolean imaginaryNumber = false;
+
+        //depending on discriminant, solution is either 2 complex, 1 real, or 2 real
+        //if d < 0; imaginary
+        //if d = 0; 1 real
+        //if d > 0; 2 real
+
+        //for complex solutions
+        if(discriminant < 0){
+            discriminant = Math.abs(discriminant); //switches negative to positive
+            imaginaryNumber = true;
+            //imaginary number is needed because you cannot square root a negative number
+        }
+
+        //simplifies the square root in the discriminant if possible
+        String rationalizedDiscriminant = rationalizeSquareRoot(discriminant, imaginaryNumber);
+
+        //for cases with more than 1 solution
+        if (discriminant != 0){
+            System.out.print("[x = (" + (-b) + " ± " + rationalizedDiscriminant + ") / " + (2 * a));
+            System.out.print("] or [");
+            //this one is in the event user wants the calculated square root even if it's a decimal
+            System.out.println("x = (" + (-b) + " ± " + roundANumber(Math.sqrt(discriminant), 2) + ") / " + (2 * a) + "]");
+        }
+        //this is for single solution answers
+        else {
+            System.out.println("x = " + (-b / (2 * a)));
+            System.out.println("1 real solution");
+            return; //so it doesn't print 2 real or complex solutions afterward
+        }
+
+        //not included in discriminant != 0 to prevent unneeded nested if statements)
+        if (imaginaryNumber){
+            System.out.println("2 complex solutions");
+        }
+        else{
+            System.out.println("2 real solutions");
         }
     }
 
@@ -314,11 +371,186 @@ public class Main {
                 return numberBeingRounded;
             }
             else if (choice == 2) { //this will send it without being rounded
-                return Math.round(numberBeingRounded);
+                return numberBeingRounded;
             }
             else {
                 println("choose 1 or 2 you fool");
             }
+        }
+    }
+
+    /**
+     * this function rounds a number to the Xth decimal place
+     * works like getRoundedNumber, but doesn't use user inputs
+     * @param toDecimalPlace the Xth decimal place
+     * @return returns the rounded number
+     */
+    public static double roundANumber(double numberBeingRounded, int toDecimalPlace){
+        int rounder = toDecimalPlace * 10;
+        numberBeingRounded = (double) Math.round(numberBeingRounded * rounder) / rounder;
+        return numberBeingRounded;
+    }
+
+    /**
+     * checks if the number entered is a whole number
+     * @return returns true if it is a whole number
+     */
+    public static boolean checkForWhole(double numberBeingChecked){
+        numberBeingChecked = (numberBeingChecked * 10) % 10;
+        return numberBeingChecked == 0;
+    }
+
+    /**
+     * rationalizes the square root inputted if possible (won't work with decimals)
+     * @param squareRoot the square root being rationalized
+     * @return returns the rationalized(?) square root
+     */
+    public static String rationalizeSquareRoot(double squareRoot, boolean hasImaginary){
+
+        int sqRootMultiplier = 1;
+        int sqRootFactor = 1;
+        int root = (int) Math.sqrt(squareRoot); //for if squareRoot has a whole root
+
+        // "i" starts at 2 because 0 and 1 can factor into any number, and so that "i" can increase
+        for(int i = 2; i * i <= squareRoot; i++){
+
+            double factorable = squareRoot % (i * i); //this checks if i^2 can divide into the sqRoot evenly
+            double factorable2 = squareRoot / (i * i); //becomes square root factor (sqrt(12) = sqrt(3) * sqrt(4))
+            double hasWholeRoot = squareRoot / (i); //checks if squareRoot is a perfect square
+
+            if(factorable == 0) {
+                sqRootMultiplier = i; //doesn't break immediately in case there is a bigger sqRootMultiplier
+                sqRootFactor = (int) factorable2;
+            }
+            if(hasWholeRoot == i){ //if perfect square, just return the whole square root
+                return String.valueOf(root);
+            }
+
+        }
+
+        String returnRoot = ""; //so no error when adding
+
+        if(hasImaginary){
+            returnRoot = "i"; //answer is multiplied by i
+        }
+
+        String primeRoot = returnRoot + "sqrt(" + squareRoot + ")";
+        returnRoot = "(" + returnRoot + sqRootMultiplier + " * sqrt(" + sqRootFactor + "))";
+
+        if(hasImaginary){
+            returnRoot += ")"; //a parenthese to close of the i(
+        }
+
+        if (sqRootMultiplier == 1){
+            return primeRoot;
+        }
+
+        else{
+            return returnRoot;
+        }
+
+    }
+
+    /**
+     * for a theory of application (2-20-2024)
+     * takes a 2d array and an int, attempts to find that int within the 2d array
+     * @return returns true if that specific int is in the 2d array
+     */
+    public static boolean theoryAppMoment(int[][] numberBoard, int locateInt){
+        for (int[] arrayOfNumbers : numberBoard) {
+            for (int i : arrayOfNumbers) {
+                if (locateInt == i) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * asks user what they want to find the volume of and calculates it
+     * options: cube, sq pyramid, sphere, cylinder, cone, triangular prism
+     */
+    public static void findVolume(){
+
+        //declared variables so switch statement doesn't mess up
+        double length; double width; double height; double volume; double roundedVolume;
+        double radius; double volumeWOutPI; double roundedVolumeWOutPI; double area;
+
+        int choice = getInteger("cube[1], square pyramid[2], sphere[3], cylinder[4], cone[5], triangular prism[6]");
+
+        switch (choice){
+            case 1: //cube: lwh
+                length = getDouble("length:");
+                width = getDouble("width:");
+                height = getDouble("height:");
+
+                volume = length * width * height;
+                roundedVolume = getRoundedNumber(volume);
+
+                System.out.println("volume of cube: " + roundedVolume);
+                break;
+
+            case 2: //square pyramid: (lwh) / 3
+                length = getDouble("length:");
+                width = getDouble("width:");
+                height = getDouble("height:");
+
+                volume = (length * width * height) / 3;
+                roundedVolume = getRoundedNumber(volume);
+
+                System.out.println("volume of square pyramid: " + roundedVolume);
+                break;
+
+            case 3: //sphere: (4/3)PI * r^3
+                radius = getDouble("radius:");
+
+                volume = ((4.0/3.0) * (radius * radius * radius));
+                volumeWOutPI = ((4.0/3.0 * Math.PI)) * (radius * radius * radius);
+
+                roundedVolume = getRoundedNumber(volume);
+                roundedVolumeWOutPI = getRoundedNumber(volumeWOutPI);
+
+                System.out.println("volume of sphere with PI:    " + roundedVolume);
+                System.out.println("volume of sphere without PI: " + roundedVolumeWOutPI);
+                break;
+
+            case 4: //cylinder: (PI * r^2) * h
+                radius = getDouble("radius:");
+                height = getDouble("height:");
+
+                volume = (radius * radius) * height;
+                volumeWOutPI = (Math.PI * (radius * radius)) * height;
+
+                roundedVolume = getRoundedNumber(volume);
+                roundedVolumeWOutPI = getRoundedNumber(volumeWOutPI);
+
+                System.out.println("volume of cylinder with PI:    " + roundedVolume);
+                System.out.println("volume of cylinder without PI: " + roundedVolumeWOutPI);
+                break;
+
+            case 5: //cone: ((PI * r^2) * h)/3
+                radius = getDouble("radius:");
+                height = getDouble("height:");
+
+                volume = ((radius * radius) * height) / 3;
+                volumeWOutPI = ((Math.PI * (radius * radius)) * height) / 3;
+
+                roundedVolume = getRoundedNumber(volume);
+                roundedVolumeWOutPI = getRoundedNumber(volumeWOutPI);
+
+                System.out.println("volume of cone with PI:    " + roundedVolume);
+                System.out.println("volume of cone without PI: " + roundedVolumeWOutPI);
+                break;
+
+            case 6: //triangular prism: (bh/2) * h
+                area = getDouble("base (area of triangle, (1/2(b*h)):");
+                height = getDouble("height:");
+
+                volume = area * height;
+                roundedVolume = getRoundedNumber(volume);
+
+                System.out.println("volume of triangular prism: " + roundedVolume);
         }
     }
 }
