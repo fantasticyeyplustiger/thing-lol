@@ -13,9 +13,10 @@ public class Main {
         label:
         // main loop
         while(true) {
+            System.out.println();
             println("choose: get average[1], converting time to time[2], get random number[3], pythagorean theorem[4]," +
                     " law of cosine[5]");
-            println("quadratic formula[6], find volume[7], quit[10]");
+            println("quadratic formula[6], find volume[7], find highest prime[8], find factors[9], quit[q]");
             String input = scan.nextLine();
             switch (input) {
                 case "1", "get average", "average", "Get average":
@@ -40,6 +41,12 @@ public class Main {
                 case "7", "find volume":
                     findVolume();
                     break;
+                case "8", "find highest prime":
+                    findHighestPrime();
+                    break;
+                case "9", "find factors":
+                    findFactors();
+                    break;
                 case "10", "q" ,"break", "quit":
                     break label;
                 default:
@@ -48,6 +55,108 @@ public class Main {
             }
         }
     }
+
+    //region functions that get a certain data type from user
+    /**
+     * gets a valid integer from the user
+     * @param prompt the prompt that asks the user what integer to put in
+     */
+    public static int getInteger(String prompt){
+        println(prompt);
+        while(true) {
+            try {
+                return Integer.parseInt(scan.nextLine());
+            } catch (NumberFormatException exception) {
+                println("that's not a valid integer. no decimals and no letters, or ur number is too big.");
+            }
+        }
+    }
+
+    /**
+     * gets a valid double from the user
+     * @param prompt the prompt that asks the user what integer to put in
+     */
+    public static double getDouble(String prompt){
+        println(prompt);
+        while(true) {
+            try {
+                return Double.parseDouble(scan.nextLine());
+            } catch (NumberFormatException exception) {
+                println("that's not a valid double. no symbols and no letters, or ur number is too big.");
+            }
+        }
+    }
+
+    /**
+     * gets a valid long from the user
+     * @param prompt the prompt that asks the user what long to put in
+     */
+    public static long getLong(String prompt){
+        println(prompt);
+        while(true) {
+            try {
+                return Long.parseLong(scan.nextLine());
+            } catch (NumberFormatException exception) {
+                println("that's not a valid long integer. no decimals and no letters, or ur number is too big.");
+            }
+        }
+    }
+
+    /**
+     * gets a boolean from the user
+     * @param prompt the prompt that asks the user a yes or no question
+     */
+    public static boolean getBoolean(String prompt){
+        println(prompt);
+            String input = scan.nextLine();
+        return input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes");
+    }
+
+    /**
+     * gets two numbers from user and gets a random number between them
+     */
+    public static void getRandomNumber(){
+        int firstBound = getInteger("input an integer");
+        int secondBound = getInteger("now input another");
+
+        //this will make firstBound less than secondBound
+        if(firstBound > secondBound){
+            int tempFBound = firstBound;
+            firstBound = secondBound;
+            secondBound = tempFBound;
+        }
+        int randomNumber = rand.nextInt(firstBound, secondBound);
+        System.out.println(randomNumber);
+    }
+    /**
+     * this function gets a valid integer that will round another number to the Xth decimal place
+     */
+    public static double getRoundedNumber(double numberBeingRounded){
+        while(true) {
+            int choice = getInteger("do you want to round your number[1] or no[2]");
+            if (choice == 1) {
+                println("note: it wont go on forever if you ask to round to 10000000th decimal place");
+                int decimalPlace = getInteger("anyways. to how many decimal places?");
+
+                //this keeps on adding 0 to roundingNumber until it reaches amount in decimalPlace
+                String roundingNumber = "1" + "0".repeat(Math.max(0, decimalPlace));
+                int finalRoundingNumber = Integer.parseInt(roundingNumber);
+
+                //this rounds the number to the X amount of decimal places
+                numberBeingRounded = (double) Math.round(numberBeingRounded * finalRoundingNumber) / finalRoundingNumber;
+
+                println("ok");
+                return numberBeingRounded;
+            }
+            else if (choice == 2) { //this will send it without being rounded
+                return numberBeingRounded;
+            }
+            else {
+                println("choose 1 or 2 you fool");
+            }
+        }
+    }
+    //endregion
 
     /** println()
      * prints a given string on another line
@@ -153,53 +262,6 @@ public class Main {
             }
         }
 
-    }
-
-    /**
-     * gets two numbers from user and gets a random number between them
-     */
-    public static void getRandomNumber(){
-        int firstBound = getInteger("input an integer");
-        int secondBound = getInteger("now input another");
-
-        //this will make firstBound less than secondBound
-        if(firstBound > secondBound){
-            int tempFBound = firstBound;
-            firstBound = secondBound;
-            secondBound = tempFBound;
-        }
-        int randomNumber = rand.nextInt(firstBound, secondBound);
-        System.out.println(randomNumber);
-    }
-
-    /**
-     * gets a valid integer from the user
-     * @param prompt the prompt that asks the user what integer to put in
-     */
-    public static int getInteger(String prompt){
-        println(prompt);
-        while(true) {
-            try {
-                return Integer.parseInt(scan.nextLine());
-            } catch (NumberFormatException exception) {
-                println("that's not a valid integer. no decimals and no letters.");
-            }
-        }
-    }
-
-    /**
-     * gets a valid double from the user
-     * @param prompt the prompt that asks the user what integer to put in
-     */
-    public static double getDouble(String prompt){
-        println(prompt);
-        while(true) {
-            try {
-                return Double.parseDouble(scan.nextLine());
-            } catch (NumberFormatException exception) {
-                println("that's not a valid double. no symbols and no letters.");
-            }
-        }
     }
 
     /**
@@ -347,35 +409,6 @@ public class Main {
         }
         else{
             System.out.println("2 real solutions");
-        }
-    }
-
-    /**
-     * this function gets a valid integer that will round another number to the Xth decimal place
-     */
-    public static double getRoundedNumber(double numberBeingRounded){
-        while(true) {
-            int choice = getInteger("do you want to round your number[1] or no[2]");
-            if (choice == 1) {
-                println("note: it wont go on forever if you ask to round to 10000000th decimal place");
-                int decimalPlace = getInteger("anyways. to how many decimal places?");
-
-                //this keeps on adding 0 to roundingNumber until it reaches amount in decimalPlace
-                String roundingNumber = "1" + "0".repeat(Math.max(0, decimalPlace));
-                int finalRoundingNumber = Integer.parseInt(roundingNumber);
-
-                //this rounds the number to the X amount of decimal places
-                numberBeingRounded = (double) Math.round(numberBeingRounded * finalRoundingNumber) / finalRoundingNumber;
-
-                println("ok");
-                return numberBeingRounded;
-            }
-            else if (choice == 2) { //this will send it without being rounded
-                return numberBeingRounded;
-            }
-            else {
-                println("choose 1 or 2 you fool");
-            }
         }
     }
 
@@ -552,5 +585,144 @@ public class Main {
 
                 System.out.println("volume of triangular prism: " + roundedVolume);
         }
+    }
+
+    /**
+     * gets a number from user and finds the highest prime number up until that number
+     */
+    public static void findHighestPrime(){
+        int limit = getInteger("highest prime number up to what? integers only");
+        int primeTester;
+
+        //region specific cases where limit is negative, 0, or 1
+        //these specific cases are needed because they result in cases where code cannot find highest prime
+        if(limit < 0){
+            System.out.println("no. that's now a positive cause u can't find a prime negative number. too bad too sad skrub");
+            limit = Math.abs(limit);
+        }
+        if(limit == 0){ //(not an else if so limit == 1 can detect negative 1 in case limit < 0
+            System.out.println("idoit");
+            return;
+        }
+        else if(limit == 1){
+            System.out.println("not composite or prime lol 1 is special");
+            return;
+        }
+        else if(limit > 100000000){
+            System.out.println("my brethren in the lord almighty why did you put such a large number in");
+            System.out.println("this might take a few seconds");
+        }
+        //endregion
+
+        for(int potentialPrime = limit; potentialPrime > 1; potentialPrime--){
+            //the reason why it starts at limit instead of 0 is in the event the limit is extremely high (i.e, 2 billion)
+            //that way it can find the highest prime number far more easily instead of going through a billion loops
+
+            for(int i = 2; i < limit; i++){
+
+                //checks if potentialPrime can divide into itself evenly
+                primeTester = potentialPrime % i;
+
+                //if it has any other factors that can divide into itself evenly besides itself, break loop
+                if(primeTester == 0 && potentialPrime != i){
+                    break;
+                }
+                if(primeTester == 0){
+                    System.out.println("highest prime number up to " + limit + " is: " + potentialPrime);
+                    return; //used instead of "break" to break second loop as well, otherwise it will keep on printing prime numbers
+                }
+            }
+        }
+    }
+
+    /**
+     * finds the factors of a user inputted number
+     */
+    public static void findFactors(){
+
+        LinkedList<Double> tempFactors = new LinkedList<>();
+        LinkedList<Integer> wholeFactors = new LinkedList<>();
+
+        println("note: this will not give u any negative factors. also, decimals will convert to whole numbers");
+        double factorsOfWhat = getDouble("give me number you want to find factors for");
+        System.out.println("ok");
+
+        if(factorsOfWhat == 0 || factorsOfWhat == 1){
+            int toWhole = (int) factorsOfWhat;
+            System.out.println("factors are " + toWhole + ". how do you not know this");
+            return;
+        }
+        else if(factorsOfWhat > 1000000000){
+            println("...weirdo");
+        }
+
+        //makes factorsOfWhat a whole number if it is a decimal
+        if(!checkForWhole(factorsOfWhat)){
+            int temp = (int) factorsOfWhat;
+            factorsOfWhat = (double) temp;
+        }
+
+        double potentialFactorOne;
+        double potentialFactorTwo;
+
+        //region find factors
+        for(potentialFactorOne = 1; potentialFactorOne < (factorsOfWhat / 2); potentialFactorOne++) {
+
+            //basically, if factorsOfWhat / x = y, then y * x must = factorsOfWhat
+            //checking if y is a whole number makes sure if it's an actual factor (factors aren't decimals)
+
+            potentialFactorTwo = factorsOfWhat / potentialFactorOne;
+            boolean dividedEvenly = checkForWhole(potentialFactorTwo);
+
+            //this prevents repeating pairs
+            if(potentialFactorOne > potentialFactorTwo){
+                break;
+            }
+
+            if(dividedEvenly){
+                tempFactors.add(potentialFactorOne);
+                tempFactors.add(potentialFactorTwo);
+            }
+        }
+        //endregion
+
+        //region BAD FOR LOOP
+        /*
+        BADDD FOR LOOP
+        for (potentialFactorTwo = factorsOfWhat; potentialFactorTwo > 0; potentialFactorTwo--) {
+
+                potentialProduct = potentialFactorOne * potentialFactorTwo;
+
+                if(potentialFactorOne >= potentialFactorTwo){
+                    potentialFactorOne = factorsOfWhat;
+                }
+
+                if(potentialProduct == factorsOfWhat){
+                    factors.add(potentialFactorOne);
+                    factors.add(potentialFactorTwo);
+                    break;
+                }
+            }
+         */
+         //endregion
+
+        // this initializes wholeFactors by turning the doubles in tempFactors to integers
+        for (double tempDouble : tempFactors) {
+            int toWhole = (int) tempDouble;
+            wholeFactors.add(toWhole);
+        }
+
+        System.out.println("Factor Pairs:");
+
+        //region print factors
+        for(int i = 0; i + 1 < wholeFactors.size(); i += 2) {
+            System.out.print("[" + wholeFactors.get(i) + ", " + wholeFactors.get(i + 1) + "] ");
+
+            //every 10 factor pairs, go to a next line
+            if(i % 10 == 0 && i > 0){
+                System.out.println();
+            }
+        }
+        //endregion
     }
 }
