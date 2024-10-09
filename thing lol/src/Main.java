@@ -413,7 +413,7 @@ public class Main {
     }
 
     /**
-     * this function rounds a number to the Xth decimal place
+     * this function rounds a number to the Xth decimal place,
      * works like getRoundedNumber, but doesn't use user inputs
      * @param toDecimalPlace the Xth decimal place
      * @return returns the rounded number
