@@ -723,6 +723,9 @@ public class Main {
                 System.out.println();
             }
         }
+
+        System.out.println("\nFactor Pairs: ");
+        System.out.print(wholeFactors.size() / 2);
         //endregion
     }
 }
